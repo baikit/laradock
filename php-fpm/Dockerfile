@@ -34,6 +34,8 @@ RUN if [ ${CHANGE_SOURCE} = true ]; then \
 ;fi
 
 # always run apt update when start and after add new source list, then clean up at end.
+RUN apt-get update -yqq && \
+    pecl channel-update pecl.php.net
 RUN set -xe; \
     apt-get update -yqq && \
     pecl channel-update pecl.php.net && \
@@ -432,6 +434,15 @@ RUN if [ ${INSTALL_XHPROF} = true ]; then \
     && rm /tmp/xhprof.tar.gz \
 ;fi
 
+###########################################################################
+# YAF:
+###########################################################################
+
+ARG INSTALL_YAF=true
+
+RUN if [ ${INSTALL_YAF} = true ]; then \
+    # Install the yaf extensiong
+    pecl install yaf && \
 COPY ./xhprof.ini /usr/local/etc/php/conf.d
 
 RUN if [ ${INSTALL_XHPROF} = false ]; then \
@@ -451,6 +462,9 @@ RUN if [ ${INSTALL_XHPROF} = false ]; then \
 RUN if [ ${INSTALL_YAF} = true ]; then \
     # Install the yaf extension
     pecl install yaf && \
+    docker-php-ext-enable yaf \
+;fi 
+
     docker-php-ext-enable yaf \
 ;fi 
 
