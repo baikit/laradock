@@ -1,6 +1,7 @@
 ARG MYSQL_VERSION
 FROM mysql:${MYSQL_VERSION}
 
+FROM mysql:latest
 LABEL maintainer="Mahmoud Zalt <mahmoud@zalt.me>"
 
 #####################################
