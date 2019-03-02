@@ -441,7 +441,7 @@ RUN if [ ${INSTALL_XHPROF} = true ]; then \
 ARG INSTALL_YAF=true
 
 RUN if [ ${INSTALL_YAF} = true ]; then \
-    # Install the yaf extensiong
+    # Install the yaf extension
     pecl install yaf && \
 COPY ./xhprof.ini /usr/local/etc/php/conf.d
 
