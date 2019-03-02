@@ -426,7 +426,7 @@ RUN set -eux; \
 ARG INSTALL_YAF=true
 
 RUN if [ ${INSTALL_YAF} = true ]; then \
-    # Install the yaf extensiong
+    # Install the yaf extension
     pecl install yaf && \
     docker-php-ext-enable yaf \
 ;fi 
