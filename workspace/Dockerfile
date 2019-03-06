@@ -715,7 +715,8 @@ ARG PHP_VERSION=${PHP_VERSION}
 RUN if [ ${INSTALL_YAF} = true ]; then \
     # Install the yaf extension
     pecl install yaf && \
-    echo "extension=yaf.so" >> /etc/php/${PHP_VERSION}/mods-available/yaf.ini \
+    echo "extension=yaf.so" >> /etc/php/${PHP_VERSION}/mods-available/yaf.ini && \
+    ln -s /etc/php/${PHP_VERSION}/mods-available/yaf.ini /etc/php/${PHP_VERSION}/cli/conf.d/yaf.ini \
 ;fi
 
 ###########################################################################
