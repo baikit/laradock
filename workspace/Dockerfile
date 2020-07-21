@@ -1389,30 +1389,28 @@ RUN set -eux; \
     elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && [ $(php -r "echo PHP_MINOR_VERSION;") = "0" ]; then \
         echo '' | pecl install yaml-2.0.4; \
     else \
-        echo '' | pecl install yaml; \
-    fi; \
-    echo "extension=yaml.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/yaml.ini; \
-    ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/yaml.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/35-yaml.ini; \
-  fi; \
-  ###########################################################################
-  # RDKAFKA:
-  ###########################################################################
-  if [ ${INSTALL_RDKAFKA} = true ]; then \
-    apt-get install -yqq librdkafka-dev; \
-    pecl install rdkafka; \
-    echo "extension=rdkafka.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/rdkafka.ini; \
-    ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/rdkafka.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-rdkafka.ini; \
-    php -m | grep -q 'rdkafka'; \
-  fi; \
-  ###########################################################################
-  # FFMpeg:
-  ###########################################################################
-  if [ ${INSTALL_FFMPEG} = true ]; then \
-    apt-get -yqq install ffmpeg; \
-  fi
+        pecl install yaml; \
+    fi && \
+    echo "extension=yaml.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/yaml.ini && \
+    ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/yaml.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/35-yaml.ini \
+;fi
 
 ###########################################################################
-# BBC Audio Waveform Image Generator:
+# RDKAFKA:
+###########################################################################
+
+ARG INSTALL_RDKAFKA=false
+
+RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
+    apt-get install -y librdkafka-dev && \
+    pecl install rdkafka && \
+    echo "extension=rdkafka.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/rdkafka.ini && \
+    ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/rdkafka.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-rdkafka.ini \
+    && php -m | grep -q 'rdkafka' \
+;fi
+
+###########################################################################
+# FFMpeg:
 ###########################################################################
 
 USER root
