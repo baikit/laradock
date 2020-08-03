@@ -684,7 +684,7 @@ ENV INSTALL_YAF_VERSION ${INSTALL_YAF_VERSION}
 
 RUN if [ ${INSTALL_YAF} = true ]; then \
     # Install the yaf extension
-    pecl install yaf-${INSTALL_YAF_VERSION} && \
+    pecl install -o -f yaf-${INSTALL_YAF_VERSION} && \
     echo "extension=yaf.so" >> /etc/php/${PHP_VERSION}/mods-available/yaf.ini && \
     ln -s /etc/php/${PHP_VERSION}/mods-available/yaf.ini /etc/php/${PHP_VERSION}/cli/conf.d/yaf.ini \
 ;fi

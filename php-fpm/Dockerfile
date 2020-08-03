@@ -839,6 +839,20 @@ RUN if [ ${INSTALL_CALENDAR} = true ]; then \
 ;fi
 
 ###########################################################################
+# YAF:
+###########################################################################
+
+ARG INSTALL_YAF=false
+
+ARG INSTALL_YAF_VERSION
+ENV INSTALL_YAF_VERSION ${INSTALL_YAF_VERSION}
+RUN if [ ${INSTALL_YAF} = true ]; then \
+    # Install the yaf extension
+    pecl install -o -f yaf-${INSTALL_YAF_VERSION} && \
+    docker-php-ext-enable yaf \
+;fi 
+
+###########################################################################
 # Phalcon:
 ###########################################################################
 
