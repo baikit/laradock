@@ -452,7 +452,7 @@ RUN if [ ${INSTALL_XHPROF} = false ]; then \
 # YAF:
 ###########################################################################
 
-ARG INSTALL_YAF=true
+ARG INSTALL_YAF=false
 
 RUN if [ ${INSTALL_YAF} = true ]; then \
     # Install the yaf extensiong
