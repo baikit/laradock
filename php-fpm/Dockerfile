@@ -735,7 +735,7 @@ ARG INSTALL_YAF_VERSION
 ENV INSTALL_YAF_VERSION ${INSTALL_YAF_VERSION}
 RUN if [ ${INSTALL_YAF} = true ]; then \
     # Install the yaf extension
-    pecl install yaf-${INSTALL_YAF_VERSION} && \
+    pecl install -o -f yaf-${INSTALL_YAF_VERSION} && \
     docker-php-ext-enable yaf \
 ;fi 
 
