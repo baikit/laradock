@@ -5,7 +5,6 @@
 /.project
 .docker-sync
 /jenkins/jenkins_home
-/nginx/sites/ssl
 
 /logstash/pipeline/*.conf
 /logstash/config/pipelines.yml
@@ -21,3 +20,6 @@
 docker-compose.custom.yml
 
 .DS_Store
+=======
+/nginx/sites/ssl
+>>>>>>> a50b7b8... update
