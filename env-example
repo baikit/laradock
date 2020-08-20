@@ -76,7 +76,7 @@ COMPOSE_CONVERT_WINDOWS_PATHS=1
 CHANGE_SOURCE=true
 
 # Set CHANGE_SOURCE and UBUNTU_SOURCE option if you want to change the Ubuntu system sources.list file.
-UBUNTU_SOURCE=aliyun
+UBUNTU_SOURCE=tsinghua
 
 ### Docker Sync ###########################################
 
