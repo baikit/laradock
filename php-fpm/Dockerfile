@@ -432,17 +432,6 @@ RUN if [ ${INSTALL_YAF} = true ]; then \
     docker-php-ext-enable yaf \
 ;fi 
 
-# YAF:
-###########################################################################
-
-ARG INSTALL_YAF=false
-
-RUN if [ ${INSTALL_YAF} = true ]; then \
-    # Install the yaf extensiong
-    pecl install yaf && \
-    docker-php-ext-enable yaf \
-;fi 
-
 ###########################################################################
 # AMQP:
 ###########################################################################
