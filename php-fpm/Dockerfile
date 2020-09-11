@@ -20,6 +20,7 @@ LABEL maintainer="Mahmoud Zalt <mahmoud@zalt.me>"
 
 ARG LARADOCK_PHP_VERSION
 
+
 # Set Environment Variables
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -87,6 +88,19 @@ RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
 #
 
 
+RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \ 
+    echo 'Asia/Shanghai' >/etc/timezone
+
+#
+#--------------------------------------------------------------------------
+# Mandatory Software's Installation
+#--------------------------------------------------------------------------
+#
+# Mandatory Software's such as ("mcrypt", "pdo_mysql", "libssl-dev", ....)
+# are installed on the base image 'laradock/php-fpm' image. If you want
+# to add more Software's or remove existing one, you need to edit the
+# base image (https://github.com/Laradock/php-fpm).
+#
 #
 #--------------------------------------------------------------------------
 # Optional Software's Installation
@@ -377,17 +391,6 @@ COPY ./xhprof.ini /usr/local/etc/php/conf.d
 RUN if [ ${INSTALL_XHPROF} = false ]; then \
     rm /usr/local/etc/php/conf.d/xhprof.ini \
 ;fi
-
-# YAF:
-###########################################################################
-
-ARG INSTALL_YAF=false
-
-RUN if [ ${INSTALL_YAF} = true ]; then \
-    # Install the yaf extensiong
-    pecl install yaf && \
-    docker-php-ext-enable yaf \
-;fi 
 
 ###########################################################################
 # AMQP:

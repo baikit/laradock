@@ -107,9 +107,6 @@ ENV TZ ${TZ}
 
 RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-
-# RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
 ###########################################################################
 # User Aliases
 ###########################################################################
