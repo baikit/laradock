@@ -76,6 +76,20 @@ RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
 # base image (https://github.com/Laradock/php-fpm).
 #
 
+
+RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \ 
+    echo 'Asia/Shanghai' >/etc/timezone
+
+#
+#--------------------------------------------------------------------------
+# Mandatory Software's Installation
+#--------------------------------------------------------------------------
+#
+# Mandatory Software's such as ("mcrypt", "pdo_mysql", "libssl-dev", ....)
+# are installed on the base image 'laradock/php-fpm' image. If you want
+# to add more Software's or remove existing one, you need to edit the
+# base image (https://github.com/Laradock/php-fpm).
+#
 #
 #--------------------------------------------------------------------------
 # Optional Software's Installation
@@ -388,38 +402,34 @@ fi
 
 ARG INSTALL_XHPROF=false
 
-RUN set -eux; \
-    if [ ${INSTALL_XHPROF} = true ]; then \
-      # Install the php xhprof extension
-      if   [ $(php -r "echo PHP_MAJOR_VERSION;") != 5 ]; then \
-        pecl install xhprof; \
-      else \
-        curl -L -o /tmp/xhprof.tar.gz "https://codeload.github.com/phacility/xhprof/tar.gz/master"; \
-        mkdir -p /tmp/xhprof; \
-        tar -C /tmp/xhprof -zxvf /tmp/xhprof.tar.gz --strip 1; \
-        ( \
-            cd /tmp/xhprof/extension; \
-            phpize; \
-            ./configure; \
-            make; \
-            make install; \
-        ); \
-        rm -r /tmp/xhprof; \
-        rm /tmp/xhprof.tar.gz; \
-      fi; \
-      docker-php-ext-enable xhprof; \
-      php -m | grep -q 'xhprof'; \
-    fi
+RUN if [ ${INSTALL_XHPROF} = true ]; then \
+    # Install the php xhprof extension
+    if [ $(php -r "echo PHP_MAJOR_VERSION;") = 7 ]; then \
+      curl -L -o /tmp/xhprof.tar.gz "https://github.com/tideways/php-xhprof-extension/archive/v5.0.1.tar.gz"; \
+    else \ 
+      curl -L -o /tmp/xhprof.tar.gz "https://codeload.github.com/phacility/xhprof/tar.gz/master"; \
+    fi \
+    && mkdir -p xhprof \
+    && tar -C xhprof -zxvf /tmp/xhprof.tar.gz --strip 1 \
+    && ( \
+        cd xhprof \
+        && phpize \
+        && ./configure \
+        && make \
+        && make install \
+    ) \
+    && rm -r xhprof \
+    && rm /tmp/xhprof.tar.gz \
+;fi
 
-# if [ ${INSTALL_XHPROF_USE_TIDYWAYS} = true ]; then \
-#   https://github.com/tideways/php-xhprof-extension
-# fi
+COPY ./xhprof.ini /usr/local/etc/php/conf.d
 
-# COPY ./xhprof.ini /usr/local/etc/php/conf.d
+RUN if [ ${INSTALL_XHPROF} = false ]; then \
+    rm /usr/local/etc/php/conf.d/xhprof.ini \
+;fi
 
-# RUN if [ ${INSTALL_XHPROF} = false ]; then \
-#     rm /usr/local/etc/php/conf.d/xhprof.ini \
-# ;fi
+
+###########################################################################
 # YAF:
 ###########################################################################
 
