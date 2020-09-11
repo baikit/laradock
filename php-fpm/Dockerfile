@@ -20,7 +20,11 @@ LABEL maintainer="Mahmoud Zalt <mahmoud@zalt.me>"
 
 ARG LARADOCK_PHP_VERSION
 
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+>>>>>>> 6507a75... merge origin master
 # Set Environment Variables
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -101,6 +105,17 @@ RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
 # to add more Software's or remove existing one, you need to edit the
 # base image (https://github.com/Laradock/php-fpm).
 #
+#
+#--------------------------------------------------------------------------
+# Mandatory Software's Installation
+#--------------------------------------------------------------------------
+#
+# Mandatory Software's such as ("mcrypt", "pdo_mysql", "libssl-dev", ....)
+# are installed on the base image 'laradock/php-fpm' image. If you want
+# to add more Software's or remove existing one, you need to edit the
+# base image (https://github.com/Laradock/php-fpm).
+#
+
 #
 #--------------------------------------------------------------------------
 # Optional Software's Installation
@@ -360,7 +375,11 @@ RUN if [ ${INSTALL_MONGO} = true ]; then \
 
 
 ###########################################################################
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+>>>>>>> 6507a75... merge origin master
 # Xhprof:
 ###########################################################################
 
