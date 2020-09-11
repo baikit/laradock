@@ -94,12 +94,7 @@ ENV TZ ${TZ}
 
 ##RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-<<<<<<< HEAD
 #RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-=======
-
-RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
->>>>>>> 6507a75... merge origin master
 
 ###########################################################################
 # User Aliases
