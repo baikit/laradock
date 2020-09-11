@@ -61,7 +61,7 @@ docker-compose down
 
 > Run commands in a running Container.
 
-1 - First list the current running containers with `docker ps`
+1 - First list the currently running containers with `docker ps`
 
 2 - Enter any container using:
 
@@ -220,9 +220,9 @@ The PHP-CLI extensions should be installed in `workspace/Dockerfile`.
 <br>
 <a name="Change-the-PHP-FPM-Version"></a>
 ## Change the (PHP-FPM) Version
-By default the latest stable PHP versin is configured to run.
+By default the latest stable PHP version is configured to run.
 
->The PHP-FPM is responsible of serving your application code, you don't have to change the PHP-CLI version if you are planning to run your application on different PHP-FPM version.
+>The PHP-FPM is responsible for serving your application code, you don't have to change the PHP-CLI version if you are planning to run your application on different PHP-FPM version.
 
 
 ### A) Switch from PHP `7.2` to PHP `5.6`
@@ -256,7 +256,7 @@ docker-compose build php-fpm
 
 >Note: it's not very essential to edit the PHP-CLI version. The PHP-CLI is only used for the Artisan Commands & Composer. It doesn't serve your Application code, this is the PHP-FPM job.
 
-The PHP-CLI is installed in the Workspace container. To change the PHP-CLI version you need to simply change the `PHP_VERSION` in te .env file as follow:
+The PHP-CLI is installed in the Workspace container. To change the PHP-CLI version you need to simply change the `PHP_VERSION` in the .env file as follow:
 
 1 - Open the `.env`.
 
@@ -309,7 +309,7 @@ To control the behavior of xDebug (in the `php-fpm` Container), you can run the 
 - Start xDebug by default: `.php-fpm/xdebug start`.
 - See the status: `.php-fpm/xdebug status`.
 
-Note: If `.php-fpm/xdebug` doesn't execute and gives `Permission Denied` error the problem can be that file `xdebug` doesn't have execution access. This can be fixed by running `chmod` command  with desired access permissions.
+Note: If `.php-fpm/xdebug` doesn't execute and gives `Permission Denied` error the problem can be that file `xdebug` doesn't have execution access. This can be fixed by running `chmod` command with desired access permissions.
 
 
 
@@ -509,7 +509,7 @@ Since the new Laravel application is in the `my-cool-app` folder, we need to rep
 ```dotenv
   APP_CODE_PATH_HOST=../my-cool-app/
 ```
-4 - Go to that folder and start working..
+4 - Go to that folder and start working.
 
 ```bash
 cd my-cool-app
@@ -820,7 +820,7 @@ Read the [Laravel official documentation](https://laravel.com/docs/5.7/redis#con
 
 ## Use Varnish
 
-The goal was to proxy request to varnish server using nginx. So only nginx has been configured for Varnish proxy.
+The goal was to proxy the request to varnish server using nginx. So only nginx has been configured for Varnish proxy.
 Nginx is on port 80 or 443. Nginx sends request through varnish server and varnish server sends request back to nginx on port 81 (external port is defined in `VARNISH_BACKEND_PORT`).
 
 The idea was taken from this [post](https://www.linode.com/docs/websites/varnish/use-varnish-and-nginx-to-serve-wordpress-over-ssl-and-http-on-debian-8/)
@@ -953,7 +953,7 @@ More details about this [here](https://github.com/jenssegers/laravel-mongodb#ins
 
 7 - Test it:
 
-- First let your Models extend from the Mongo Eloquent Model. Check the [documentation](https://github.com/jenssegers/laravel-mongodb#eloquent).
+- First, let your Models extend from the Mongo Eloquent Model. Check the [documentation](https://github.com/jenssegers/laravel-mongodb#eloquent).
 - Enter the Workspace Container.
 - Migrate the Database `php artisan migrate`.
 
@@ -1058,7 +1058,7 @@ job1:
 
 7 - Push changes to gitlab
 
-8 - Verify that pipeline is run successful
+8 - Verify that pipeline is running successfully
 
 
 
@@ -1212,7 +1212,7 @@ docker-compose up -d elasticsearch
 ```bash
 docker-compose exec elasticsearch /usr/share/elasticsearch/bin/plugin install {plugin-name}
 ```
-For ElasticSearch 5.0 and above, the previous "plugin" command as been renamed to "elasticsearch-plguin". 
+For ElasticSearch 5.0 and above, the previous "plugin" command has been renamed to "elasticsearch-plguin". 
 Use the following instead:
 
 ```bash
@@ -1366,7 +1366,7 @@ For more documentation on Thumbor visit the [Thumbor documenation](http://thumbo
 ## Use AWS
 
 1 - Configure AWS:
-  - make sure to add your SSH keys in aws/ssh_keys folder
+  - make sure to add your SSH keys in aws-eb-cli/ssh_keys folder
 
 2 - Run the Aws Container (`aws`) with the `docker-compose up` command. Example:
 
@@ -2021,7 +2021,7 @@ To install FFMPEG in the Workspace container
 
 4 - If you use the `php-worker` container too, please follow the same steps above especially if you have conversions that have been queued.
 
-**PS** Don't forget to install the binary in the `php-fpm` container too by applying the same steps above to its container, otherwise the you'll get an error when running the `php-ffmpeg` binary.
+**PS** Don't forget to install the binary in the `php-fpm` container too by applying the same steps above to its container, otherwise you'll get an error when running the `php-ffmpeg` binary.
 
 
 <br>

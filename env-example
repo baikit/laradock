@@ -47,7 +47,7 @@ PHP_VERSION=7.2
 PHALCON_VERSION=4.0.5
 
 ### Yaf Version ###########################################
-# Select a Yaf version of the Workspace and PHP-FPM containers Accepted values: 3.0.0+
+# Select a Yaf version of the Workspace and PHP-FPM containers (Does not apply to HHVM). Accepted values: 3.1.0+
 YAF_VERSION=3.1.0
 
 ### PHP Interpreter #######################################
@@ -311,6 +311,7 @@ APACHE_PHP_UPSTREAM_CONTAINER=php-fpm
 APACHE_PHP_UPSTREAM_PORT=9000
 APACHE_PHP_UPSTREAM_TIMEOUT=60
 APACHE_DOCUMENT_ROOT=/var/www/
+APACHE_INSTALL_HTTP2=false
 
 ### MYSQL #################################################
 

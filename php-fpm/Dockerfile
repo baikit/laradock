@@ -87,6 +87,30 @@ RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
 #
 
 
+RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \ 
+    echo 'Asia/Shanghai' >/etc/timezone
+
+#
+#--------------------------------------------------------------------------
+# Mandatory Software's Installation
+#--------------------------------------------------------------------------
+#
+# Mandatory Software's such as ("mcrypt", "pdo_mysql", "libssl-dev", ....)
+# are installed on the base image 'laradock/php-fpm' image. If you want
+# to add more Software's or remove existing one, you need to edit the
+# base image (https://github.com/Laradock/php-fpm).
+#
+#
+#--------------------------------------------------------------------------
+# Mandatory Software's Installation
+#--------------------------------------------------------------------------
+#
+# Mandatory Software's such as ("mcrypt", "pdo_mysql", "libssl-dev", ....)
+# are installed on the base image 'laradock/php-fpm' image. If you want
+# to add more Software's or remove existing one, you need to edit the
+# base image (https://github.com/Laradock/php-fpm).
+#
+
 #
 #--------------------------------------------------------------------------
 # Optional Software's Installation
@@ -346,7 +370,6 @@ RUN if [ ${INSTALL_MONGO} = true ]; then \
 
 
 ###########################################################################
-
 # Xhprof:
 ###########################################################################
 
@@ -915,9 +938,14 @@ RUN if [ ${INSTALL_WKHTMLTOPDF} = true ]; then \
     libx11-dev \
     libjpeg62 \
     libxtst6 \
+    fontconfig \ 
+    libjpeg62-turbo \
+    xfonts-base \
+    xfonts-75dpi \
     wget \
-    && wget https://github.com/h4cc/wkhtmltopdf-amd64/blob/master/bin/wkhtmltopdf-amd64?raw=true -O /usr/local/bin/wkhtmltopdf \
-    && chmod +x /usr/local/bin/wkhtmltopdf \
+    && wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.stretch_amd64.deb \
+    && dpkg -i wkhtmltox_0.12.6-1.stretch_amd64.deb \
+    && apt -f install \
 ;fi
 
 ###########################################################################
