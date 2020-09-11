@@ -20,11 +20,6 @@ LABEL maintainer="Mahmoud Zalt <mahmoud@zalt.me>"
 
 ARG LARADOCK_PHP_VERSION
 
-<<<<<<< HEAD
-
-=======
-<<<<<<< HEAD
->>>>>>> 6507a75... merge origin master
 # Set Environment Variables
 ENV DEBIAN_FRONTEND noninteractive
 
