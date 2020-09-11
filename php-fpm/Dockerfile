@@ -20,6 +20,7 @@ LABEL maintainer="Mahmoud Zalt <mahmoud@zalt.me>"
 
 ARG LARADOCK_PHP_VERSION
 
+
 # Set Environment Variables
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -424,8 +425,12 @@ RUN set -eux; \
 # YAF:
 ###########################################################################
 
+COPY ./xhprof.ini /usr/local/etc/php/conf.d
 ARG INSTALL_YAF=false
 
+RUN if [ ${INSTALL_XHPROF} = false ]; then \
+    rm /usr/local/etc/php/conf.d/xhprof.ini \
+;fi
 RUN if [ ${INSTALL_YAF} = true ]; then \
     # Install the yaf extension
     pecl install yaf && \
