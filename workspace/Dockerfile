@@ -31,17 +31,10 @@ USER root
 ###########################################################################
 
 ARG CHANGE_SOURCE=false
-ARG UBUNTU_SOURCE=aliyun
-COPY ./sources.sh /tmp/sources.sh
 RUN if [ ${CHANGE_SOURCE} = true ]; then \
     # Change application source from deb.debian.org to aliyun source
-    sed -i 's/deb.debian.org/mirrors.tuna.tsinghua.edu.cn/' /etc/apt/sources.list; \
-    sed -i 's/security.debian.org/mirrors.tuna.tsinghua.edu.cn/' /etc/apt/sources.list; \
-    sed -i 's/security-cdn.debian.org/mirrors.tuna.tsinghua.edu.cn/' /etc/apt/sources.list; \
-    chmod +x /tmp/sources.sh; \
-    /bin/sh -c /tmp/sources.sh; \
-  fi; \
-  rm -rf /tmp/sources.sh
+    sed -i 's/ports.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list; \
+  fi;
 
 ###########################################################################
 # Laradock non-root user:
@@ -339,25 +332,18 @@ ARG INSTALL_XDEBUG=false
 
 RUN if [ ${INSTALL_XDEBUG} = true ]; then \
   # Install the xdebug extension
-  if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ]; then \
-    pecl install xdebug-3.0.0; \
+  # https://xdebug.org/docs/compat
+  apt-get install -yqq pkg-config php-xml php${LARADOCK_PHP_VERSION}-xml && \
+  if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ] || { [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && { [ $(php -r "echo PHP_MINOR_VERSION;") = "4" ] || [ $(php -r "echo PHP_MINOR_VERSION;") = "3" ] ;} ;}; then \
+    pecl install xdebug-3.1.2; \
   else \
     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
       pecl install xdebug-2.5.5; \
     else \
-      if [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && [ $(php -r "echo PHP_MINOR_VERSION;") = "0" ]; then \
+      if [ $(php -r "echo PHP_MINOR_VERSION;") = "0" ]; then \
         pecl install xdebug-2.9.0; \
       else \
-        if [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && [ $(php -r "echo PHP_MINOR_VERSION;") = "1" ]; then \
-          pecl install xdebug-2.9.8; \
-        else \
-          if [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ]; then \
-            pecl install xdebug-2.9.8; \
-          else \
-            #pecl install xdebug; \
-            echo "xDebug 3 required, not supported."; \
-          fi \
-        fi \
+        pecl install xdebug-2.9.8; \
       fi \
     fi \
   fi && \
@@ -460,16 +446,23 @@ ARG INSTALL_MONGO=false
 
 RUN if [ ${INSTALL_MONGO} = true ]; then \
     # Install the mongodb extension
+    apt-get install -yqq pkg-config && \
     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
-      pecl install mongo && \
-      echo "extension=mongo.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/mongo.ini && \
-      ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/mongo.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-mongo.ini \
-    ;else \
-      pecl install mongodb && \
-      echo "extension=mongodb.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/mongodb.ini && \
-      ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/mongodb.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-mongodb.ini \
-    ;fi \
-;fi
+      pecl install mongo; \
+      echo "extension=mongo.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/mongo.ini; \
+      ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/mongo.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-mongo.ini; \
+      php -m | grep -oiE '^mongo$'; \
+    else \
+      if [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && { [ $(php -r "echo PHP_MINOR_VERSION;") = "0" ] || [ $(php -r "echo PHP_MINOR_VERSION;") = "1" ] ;}; then \
+        pecl install mongodb-1.9.2; \
+      else \
+        pecl install mongodb; \
+      fi; \
+      echo "extension=mongodb.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/mongodb.ini; \
+      ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/mongodb.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/30-mongodb.ini; \
+      php -m | grep -oiE '^mongodb$'; \
+    fi; \
+fi
 
 ###########################################################################
 # AMQP:
@@ -554,11 +547,11 @@ ARG INSTALL_SWOOLE=false
 RUN set -eux; \
     if [ ${INSTALL_SWOOLE} = true ]; then \
       # Install Php Swoole Extension
-      if   [ $(php -r "echo PHP_VERSION_ID - PHP_RELEASE_VERSION;") = "50600" ]; then \
+      if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
         echo '' | pecl -q install swoole-2.0.10; \
-      elif [ $(php -r "echo PHP_VERSION_ID - PHP_RELEASE_VERSION;") = "70000" ]; then \
+      elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && [ $(php -r "echo PHP_MINOR_VERSION;") = "0" ]; then \
         echo '' | pecl -q install swoole-4.3.5; \
-      elif [ $(php -r "echo PHP_VERSION_ID - PHP_RELEASE_VERSION;") = "70100" ]; then \
+      elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && [ $(php -r "echo PHP_MINOR_VERSION;") = "1" ]; then \
         echo '' | pecl -q install swoole-4.5.11; \
       else \
         echo '' | pecl -q install swoole; \
@@ -567,6 +560,27 @@ RUN set -eux; \
       ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/swoole.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-swoole.ini; \
       php -m | grep -q 'swoole'; \
     fi
+
+
+
+###########################################################################
+# xlswriter:
+###########################################################################
+
+ARG INSTALL_XLSWRITER=false
+RUN set -eux; \
+    if [ ${INSTALL_XLSWRITER} = true ]; then \
+      # Install Php xlswriter Extension
+      if [ $(php -r "echo PHP_MAJOR_VERSION;") != "5" ]; then \
+        echo '' | pecl -q install xlswriter && \
+        echo "extension=xlswriter.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/xlswriter.ini && \
+        ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/xlswriter.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-xlswriter.ini && \
+        php -m | grep -q 'xlswriter'; \
+      else \
+        echo "PHP Extension for xlswriter is not supported for PHP 5.0"; \
+      fi \
+    ;fi
+
 
 ###########################################################################
 # Taint EXTENSION
@@ -668,6 +682,7 @@ RUN if [ ${INSTALL_IONCUBE} = true ]; then \
       && echo "zend_extension=ioncube_loader.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/ioncube.ini \
       && ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/ioncube.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/0ioncube.ini \
       && rm -rf /tmp/ioncube* \
+      && php -m | grep -oiE '^ionCube Loader$' \
     ;fi \
 ;fi
 
@@ -734,7 +749,7 @@ ENV NVM_NODEJS_ORG_MIRROR ${NVM_NODEJS_ORG_MIRROR}
 RUN if [ ${INSTALL_NODE} = true ]; then \
     # Install nvm (A Node Version Manager)
     mkdir -p $NVM_DIR && \
-    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash \
         && . $NVM_DIR/nvm.sh \
         && nvm install ${NODE_VERSION} \
         && nvm use ${NODE_VERSION} \
@@ -930,9 +945,13 @@ RUN if [ ${INSTALL_OCI8} = true ]; then \
           libaio-dev && \
   # Install PHP extensions
   if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
-    echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install oci8-2.0.10; \
-  else \
+    echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install oci8-2.0.12; \
+  elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ]; then \
     echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install oci8-2.2.0; \
+  elif [ $(php -r "echo PHP_VERSION_ID - PHP_RELEASE_VERSION;") = "80000" ]; then \
+    echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install oci8-3.0.1; \
+  else \
+    echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install oci8; \
   fi \
   && echo "extension=oci8.so" >> /etc/php/${LARADOCK_PHP_VERSION}/cli/php.ini \
   && php -m | grep -q 'oci8' \
@@ -1062,34 +1081,36 @@ RUN set -eux; \
   if [ ${INSTALL_MSSQL} = true ]; then \
     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
       apt-get install -yqq php5.6-sybase freetds-bin freetds-common libsybdb5 \
-      && php -m | grep -q 'mssql' \
-      && php -m | grep -q 'pdo_dblib' \
+      && php -m | grep -oiE '^mssql$' \
+      && php -m | grep -oiE '^pdo_dblib$' \
     ;else \
       ###########################################################################
       #  The following steps were taken from
       #  https://github.com/Microsoft/msphpsql/wiki/Install-and-configuration
       ###########################################################################
       curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
-      curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
+      curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
       apt-get update -yqq && \
       ACCEPT_EULA=Y apt-get install -yqq msodbcsql17 mssql-tools unixodbc unixodbc-dev libgss3 odbcinst locales && \
       ln -sfn /opt/mssql-tools/bin/sqlcmd /usr/bin/sqlcmd && \
       ln -sfn /opt/mssql-tools/bin/bcp /usr/bin/bcp && \
       echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-      locale-gen && \
-      if [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && [ $(php -r "echo PHP_MINOR_VERSION;") = "2" ]; then \
-        pecl install pdo_sqlsrv-5.8.1 sqlsrv-5.8.1 \
-      ;elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && [ $(php -r "echo PHP_MINOR_VERSION;") = "1" ]; then \
-        pecl install pdo_sqlsrv-5.6.1 sqlsrv-5.6.1 \
-      ;elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && [ $(php -r "echo PHP_MINOR_VERSION;") = "0" ]; then \
+      locale-gen \
+      && if [ $(php -r "echo PHP_VERSION_ID - PHP_RELEASE_VERSION;") = "70000" ]; then \
         pecl install pdo_sqlsrv-5.3.0 sqlsrv-5.3.0 \
+      ;elif [ $(php -r "echo PHP_VERSION_ID - PHP_RELEASE_VERSION;") = "70100" ]; then \
+        pecl install pdo_sqlsrv-5.6.1 sqlsrv-5.6.1 \
+      ;elif [ $(php -r "echo PHP_VERSION_ID - PHP_RELEASE_VERSION;") = "70200" ]; then \
+        pecl install pdo_sqlsrv-5.8.1 sqlsrv-5.8.1 \
+      ;elif [ $(php -r "echo PHP_VERSION_ID - PHP_RELEASE_VERSION;") = "70300" ]; then \
+        pecl install pdo_sqlsrv-5.9.0 sqlsrv-5.9.0 \
       ;else \
         pecl install pdo_sqlsrv sqlsrv \
       ;fi && \
-      echo "extension=sqlsrv.so"     > /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-sqlsrv.ini && \
       echo "extension=pdo_sqlsrv.so" > /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-pdo_sqlsrv.ini && \
-      php -m | grep -q 'sqlsrv' && \
-      php -m | grep -q 'pdo_sqlsrv' \
+      echo "extension=sqlsrv.so"     > /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-sqlsrv.ini && \
+      php -m | grep -oiE '^pdo_sqlsrv$' && \
+      php -m | grep -oiE '^sqlsrv$' \
     ;fi \
   ;fi
 
@@ -1417,18 +1438,16 @@ USER root
 ARG INSTALL_AUDIOWAVEFORM=false
 
 RUN if [ ${INSTALL_AUDIOWAVEFORM} = true ]; then \
-   apt-get -y install git wget make cmake gcc g++ libmad0-dev libid3tag0-dev libsndfile1-dev libgd-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev \
-   && git clone https://github.com/bbc/audiowaveform.git \
-   && cd audiowaveform \
-   && wget https://github.com/google/googletest/archive/release-1.10.0.tar.gz \
-   && tar xzf release-1.10.0.tar.gz \
-   && ln -s googletest-release-1.10.0/googletest googletest \
-   && ln -s googletest-release-1.10.0/googlemock googlemock \
-   && mkdir build \
-   && cd build \
-   && cmake .. \
-   && make \
-   && make install \
+  apt-get -y install wget make cmake gcc g++ libmad0-dev libid3tag0-dev libsndfile1-dev libgd-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev \
+  && cd /tmp \
+  && git clone https://github.com/bbc/audiowaveform.git \
+  && cd audiowaveform \
+  && git clone --depth=1 https://github.com/google/googletest.git -b release-1.11.0 \
+  && mkdir build \
+  && cd build \
+  && cmake .. \
+  && make \
+  && make install \
 ;fi
 
 #####################################
@@ -1692,6 +1711,45 @@ RUN set -xe; \
     && rm /tmp/ssdb-client-php.tar.gz \
     && docker-php-ext-enable ssdb \
 ;fi
+
+#####################################
+# trader:
+#####################################
+
+USER root
+
+ARG INSTALL_TRADER=false
+
+RUN if [ ${INSTALL_TRADER} = true ]; then \
+    pecl install trader \
+    && echo "extension=trader.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/trader.ini \
+    && ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/trader.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-trader.ini \
+;fi
+
+#
+#--------------------------------------------------------------------------
+# zmq
+#--------------------------------------------------------------------------
+#
+
+USER root
+
+ARG INSTALL_ZMQ=false
+
+RUN if [ ${INSTALL_ZMQ} = true ]; then \
+    apt-get install --yes git libzmq3-dev \
+    && git clone https://github.com/zeromq/php-zmq.git \
+    && cd php-zmq \
+    && phpize \
+    && ./configure \
+    && make \
+    && make install \
+    && cd .. \
+    && rm -fr php-zmq \
+    && echo "extension=zmq.so" >> /etc/php/${LARADOCK_PHP_VERSION}/mods-available/zmq.ini \
+    && ln -s /etc/php/${LARADOCK_PHP_VERSION}/mods-available/zmq.ini /etc/php/${LARADOCK_PHP_VERSION}/cli/conf.d/20-zmq.ini \
+;fi
+
 #
 #--------------------------------------------------------------------------
 # Final Touch
