@@ -25,6 +25,19 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # If you're in China, or you need to change sources, will be set CHANGE_SOURCE to true in .env.
 
+# RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' >/etc/timezone
+
+#
+#--------------------------------------------------------------------------
+# Mandatory Software's Installation
+#--------------------------------------------------------------------------
+#
+# Mandatory Software's such as ("mcrypt", "pdo_mysql", "libssl-dev", ....)
+# are installed on the base image 'laradock/php-fpm' image. If you want
+# to add more Software's or remove existing one, you need to edit the
+# base image (https://github.com/Laradock/php-fpm).
+#
+
 ARG CHANGE_SOURCE=false
 RUN if [ ${CHANGE_SOURCE} = true ]; then \
     # Change application source from deb.debian.org to aliyun source
@@ -405,6 +418,7 @@ RUN if [ ${INSTALL_MONGO} = true ]; then \
       php -m | grep -oiE '^mongodb$'; \
     fi; \
 fi
+
 
 ###########################################################################
 # Xhprof:

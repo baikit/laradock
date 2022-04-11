@@ -24,5 +24,5 @@
 
 docker-compose.custom.yml
 
-.DS_Store
+redis/conf
 /nginx/sites/ssl

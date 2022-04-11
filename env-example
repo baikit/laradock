@@ -37,6 +37,10 @@ COMPOSE_PROJECT_NAME=laradock
 # Select a PHP version of the Workspace and PHP-FPM containers (Does not apply to HHVM). Accepted values: 7.2 - 7.1 - 7.0 - 5.6
 PHP_VERSION=7.2
 
+### Yaf Version ###########################################
+# Select a Yaf version of the Workspace and PHP-FPM containers (Does not apply to HHVM). Accepted values: 3.1.0+
+YAF_VERSION=3.1.0
+
 ### PHP Interpreter #######################################
 
 # Select the PHP Interpreter. Accepted values: hhvm - php-fpm
