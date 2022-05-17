@@ -435,40 +435,6 @@ RUN if [ ${INSTALL_XHPROF} = true ]; then \
 ;fi
 
 ###########################################################################
-# YAF:
-###########################################################################
-
-ARG INSTALL_YAF=false
-
-RUN if [ ${INSTALL_YAF} = true ]; then \
-    # Install the yaf extension
-    pecl install yaf && \
-COPY ./xhprof.ini /usr/local/etc/php/conf.d
-
-RUN if [ ${INSTALL_XHPROF} = false ]; then \
-    rm /usr/local/etc/php/conf.d/xhprof.ini \
-;fi
-
-###########################################################################
-# YAF:
-###########################################################################
-
-COPY ./xhprof.ini /usr/local/etc/php/conf.d
-ARG INSTALL_YAF=false
-
-RUN if [ ${INSTALL_XHPROF} = false ]; then \
-    rm /usr/local/etc/php/conf.d/xhprof.ini \
-;fi
-RUN if [ ${INSTALL_YAF} = true ]; then \
-    # Install the yaf extension
-    pecl install yaf && \
-    docker-php-ext-enable yaf \
-;fi 
-
-    docker-php-ext-enable yaf \
-;fi 
-
-###########################################################################
 # AMQP:
 ###########################################################################
 
